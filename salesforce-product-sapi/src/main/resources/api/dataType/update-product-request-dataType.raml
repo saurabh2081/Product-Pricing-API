@@ -1,0 +1,26 @@
+#%RAML 1.0 DataType
+type: array
+description: A list of products returned from Salesforce
+items:
+  type: object
+  properties:
+    ProductPrice:
+      type: string
+      required: false
+      example: "50.7"
+    Description:
+      type: string
+      required: false
+      example: "software"
+    Id:
+      type: string
+      required: true
+      example: "01tgL00000A8t6PQAR"
+    CurrencyCode:
+      type: string
+      required: false
+      example: "USD"
+    Name:
+      type: string
+      required: false
+      example: "animal"

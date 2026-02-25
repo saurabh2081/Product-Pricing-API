@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<!-- 	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="8bf85428-a141-471d-9fc7-5eb5dd8171af" > -->
+<!-- 		<salesforce:basic-connection username="sm273609.bcd525c75d80@agentforce.com" password="Saurabh@1998" securityToken="S5BF1I3eqlA5EroC1tupIA9t" url="https://login.salesforce.com/services/Soap/u/61.0"/> -->
+<!-- 	</salesforce:sfdc-config> -->
+	<sub-flow name="getSingleProductFlow" doc:id="98ca2ee6-7c05-4869-a4f0-e1131d805b57" >
+		<set-variable value="#[attributes.queryParams.'externalId']" doc:name="Set Variable" doc:id="ac8b5c94-81bf-42e4-ae30-7a34aeeeb22a" variableName="reqExternalId"/>
+		<salesforce:query doc:name="fetch by Id" doc:id="732c7828-de9b-49eb-969f-d8da03657165" config-ref="Salesforce_Config_new" >
+			<salesforce:salesforce-query ><![CDATA[SELECT Name, ProductCode, ExternalId, Id, Description, ProductPrice__c, IsActive, CurrencyCode__c 
+FROM Product2 
+WHERE ExternalId = ':id']]></salesforce:salesforce-query>
+			<salesforce:parameters ><![CDATA[#[output application/java
+---
+{
+	'id' : vars.reqExternalId
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="response message" doc:id="3a36c64f-12f4-42f6-acbb-90904bc39f91" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<flow name="getAllProductsFlow" doc:id="1c7216c1-7841-4e0c-99f6-b5dbfc2dc92d" >
+		<salesforce:query-all doc:name="fetch all product" doc:id="f2646c04-71d5-43f5-af8a-6ca01120014d" config-ref="Salesforce_Config_new">
+			<salesforce:salesforce-query ><![CDATA[SELECT Name, Id, ExternalId, ProductCode, CurrencyCode__c, ProductPrice__c, Description, IsActive, IsDeleted
+FROM Product2]]></salesforce:salesforce-query>
+		</salesforce:query-all>
+		<ee:transform doc:name="response message" doc:id="9608914d-e88c-498d-a787-085e11cc6407" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	
+	Name: payload01.Name,
+	Id: payload01.Id,
+	ExternalId: payload01.ExternalId,
+	ProductCode: payload01.ProductCode,
+	CurrencyCode__c: payload01.CurrencyCode__c,
+	ProductPrice__c:  ((payload01.ProductPrice__c default "0.00") as Number) as String {format: "0.00"},
+	Description: payload01.Description,
+	IsActive: payload01.IsActive,
+	IsDeleted: payload01.IsDeleted,
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="filter product" doc:id="9f2e64a1-29bd-44f8-a5b2-d09190d9fd52">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="nonDeletedProducts"><![CDATA[%dw 2.0
+output application/json
+---
+payload filter ((item, index) -> item.IsDeleted == "false")]]></ee:set-variable>
+				<ee:set-variable variableName="deletedProducts" ><![CDATA[%dw 2.0
+output application/json
+---
+payload filter ((item, index) -> item.IsDeleted == "true")]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+		<ee:transform doc:name="nonDeleted products" doc:id="a820debb-e873-4640-8787-d16631f89229" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	totalProducts: sizeOf(vars.nonDeletedProducts),
+	products: vars.nonDeletedProducts
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="createProductFlow" doc:id="63cb0ecb-2b9b-4b6b-a419-eda32c728915" >
+		<ee:transform doc:name="request payload for create product" doc:id="5af5e453-06a4-448e-afff-040dd82bad8c" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="requestPayload" ><![CDATA[%dw 2.0
+output application/java
+import * from dw::core::Strings
+---
+payload map (item, index) -> {
+    Name: item.name,
+    ProductCode: item.productCode,
+    ExternalId: "P" ++ ((uuid() replace "-" with "")[0 to 10]),
+    IsActive: item.isActive default true,
+    CurrencyCode__c: "USD",
+    ProductPrice__c: item.productPrice as Number default 0.00,
+    Description: item.description  default null
+}
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:create doc:name="createProduct" doc:id="66b4d8d4-da7f-44ce-bbcf-fd71e737290c" config-ref="Salesforce_Config_new" type="Product2">
+			<salesforce:records ><![CDATA[#[vars.requestPayload]]]></salesforce:records>
+		</salesforce:create>
+		<ee:transform doc:name="response from salesforce" doc:id="d103b980-fbf2-4da4-b0c6-28eb69c59a85" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+{
+  "message": "Product created",
+  "externalId": vars.requestPayload.ExternalId
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="deleteProductFlow" doc:id="f84d52bb-3a93-4c98-9112-aedd9c40fba3" >
+		<ee:transform doc:name="request payload" doc:id="8f77e288-0395-4b86-a463-96f9d8964177" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="productId" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.productId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<salesforce:delete doc:name="deleteProduct" doc:id="ee924df3-f375-4577-be81-a4bb7f15444e" config-ref="Salesforce_Config_new">
+			<salesforce:ids><![CDATA[#[vars.productId]]]></salesforce:ids>
+		</salesforce:delete>
+		<choice doc:name="Choice" doc:id="88b816ab-a702-43d9-b46a-b3dcde46baf0" >
+			<when expression="#[payload.successful == true]">
+				<ee:transform doc:name="successful == true" doc:id="a4565b8b-4e39-48c2-bf89-64f7d89e840e">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	message: "All products deleted successfully"
+}
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="successful != true" doc:id="452374a9-9232-4dfd-896d-8bb38e30f4ef" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+    ("Product"++(index+1)):if(item.exception == null)"Product deteted successfully" else if(item.exception.message contains "ENTITY_IS_DELETED")"Product already deleted" else item.exception.message  
+} )
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+	<flow name="updateProductsFlow" doc:id="4b617d23-6d20-488f-8a5c-c9e78f566923" >
+		<ee:transform doc:name="request payload" doc:id="8ae53c72-25a1-4909-86b1-c72e6f7fcb73" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java 
+---
+payload map (item, index) -> {
+    Id: item.Id,
+    Name: item.Name,    
+    IsActive: item.IsActive,
+    CurrencyCode__c: item.CurrencyCode,
+    ProductPrice__c: item.ProductPrice,
+    Description: item.Description
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:update doc:name="Update products" doc:id="0b48cf33-97f7-4127-b15b-28ea45b18678" config-ref="Salesforce_Config_new" type="Product2"/>
+		<choice doc:name="Choice" doc:id="89887441-d3f5-4d68-b002-48cc83603e57" >
+			<when expression="#[payload.successful == true]" >
+				<ee:transform doc:name="successful == true" doc:id="63fbeb58-1172-455c-9d3d-4bfb847db2e0" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	message: "All product updated successfully"
+}
+
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="successful != true" doc:id="58c778a6-c778-47a1-965c-b7db5d450bdd" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.items map ((item, index) ->{
+    ("Product"++(index+1)):if(item.exception == null)"Product updated successfully" else item.exception.message  
+} )
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

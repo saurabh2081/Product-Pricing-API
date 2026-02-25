@@ -1,0 +1,28 @@
+api:
+  id: "20749889"
+  
+  
+auth:
+    clientId: "![znHcNCJ53kdJtEwlyzL0E7rLKqpfIUq4zpUs1Y/4Up7KpT/Wdxh73fqW74z3yPK6]"
+    clientSecret: "![B5RR0LBoi7P4t7ze7ztzNO1Lbg+fqugHEAXMiIs4eY7zbLF1/libpd2M6uEs/BZB]"
+   
+    
+
+salesforce-sapi:
+    readMethod: "GET"
+    createMethod: "POST"
+    updateMethod: "PATCH"
+    deleteMethod: "DELETE"
+    host: "salesforce-product-sapi-umts4o.5sc6y6-3.usa-e2.cloudhub.io"
+    path: "/sapi/v1/products"
+    
+    
+product-pricing-papi:
+      method: "GET"
+      host: "product-pricing-papi-umts4o.5sc6y6-2.usa-e2.cloudhub.io"
+      path: "/papi/v1/products" 
+      
+       
+resp:
+  timeout: "3000" 
+    

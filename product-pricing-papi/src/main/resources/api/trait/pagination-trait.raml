@@ -1,0 +1,15 @@
+#%RAML 1.0 Trait
+
+queryParameters:
+  limit:
+    type: integer
+    required: false
+    default: 10
+    minimum: 1
+    description: Number of records to return.
+  offset:
+    type: integer
+    required: false
+    default: 0
+    minimum: 0
+    description: Number of records to skip.

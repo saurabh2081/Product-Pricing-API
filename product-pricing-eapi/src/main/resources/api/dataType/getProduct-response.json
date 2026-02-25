@@ -1,0 +1,13 @@
+[
+    {
+        "ProductPrice__c": "50.0",
+        "Description": "food",
+        "ProductCode": "MT000123",
+        "IsActive": "false",
+        "ExternalId": "Pf4ed0ee254d",
+        "Id": "01tgL00000AqjbBQAR",
+        "type": "Product2",
+        "CurrencyCode__c": "USD",
+        "Name": "Bevereges"
+    }
+]

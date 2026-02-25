@@ -1,0 +1,37 @@
+#%RAML 1.0 DataType
+type: array
+items:
+  type: object
+  properties:
+    name:
+      type: string
+      required: false
+      example: "ggr"
+    productCode:
+      type: string
+      required: false
+      example: "XYZ12345"
+    description:
+      type: string
+      required: false
+      example: "software"
+    currencyCode:
+      type: string
+      required: false
+      default: "USD"
+      example: "USD"
+    productPrice:
+      type: number
+      required: false
+      format: double
+      multipleOf: 0.01
+      example: 50.70
+    isActive:
+      type: boolean
+      required: false
+      example: true
+  
+    
+      
+      
+      

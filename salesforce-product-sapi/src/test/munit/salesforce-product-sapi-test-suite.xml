@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="salesforce-product-sapi-test-suite.xml" />
+	<global-property doc:name="Global Property" doc:id="b5e7660c-654f-4916-a259-9890dd76364d" name="mule.key" value="1234567891234567" />
+	<munit:test name="salesforce-product-sapi-test-suite-mainFlow" doc:id="12027302-9753-4611-9019-f98ee1431d95" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8c6781f3-0777-4591-ba38-e8d60c091715" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="salesforce-product-sapi-main" doc:id="1e283fba-7ae7-42d7-bf31-321a710af03e" name="salesforce-product-sapi-main" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b955e315-7d81-4f42-93c1-ec6562236be3" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	
+</munit:test>
+	
+	<munit:test name="salesforce-product-sapi-test-suite-delete:\products:salesforce-product-sapi-configTest" doc:id="4c732db8-01c9-4419-992f-7693cd6726eb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2135bdb6-4eba-489a-9c83-3405b99c2c55" processor="salesforce:delete">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="deleteProduct" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;	"successful":true&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="c5a488c5-3524-4b59-acd1-d7bb33b34d66" >
+				<munit:payload value='#[{&#10;	"productId":"1ee132sdasd"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to delete:\products:salesforce-product-sapi-config" doc:id="fcf5f3b5-3203-44aa-994e-13e5e5c13e82" name="delete:\products:salesforce-product-sapi-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="45477bfa-0221-47c3-ac25-cabfe8ec2960" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-delete:\products:salesforce-product-sapi-configTest1" doc:id="f2831b87-4819-42ee-8823-72e965971087" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="572555bd-b664-4cb5-85b8-4b29128c6e32" processor="salesforce:delete" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="deleteProduct" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="a0cfbd81-fd9c-42d6-aa0a-7ae8b7728a34" >
+				<munit:payload value='#[{&#10;	"productId":"1ee132sdasd"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to delete:\products:salesforce-product-sapi-config" doc:id="675c8b81-d6de-45e5-9ded-b0eeca4acff7" name="delete:\products:salesforce-product-sapi-config" />
+		</munit:execution>
+	
+</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-patch:\products:application\json:salesforce-product-sapi-configTest" doc:id="f8ab3487-4ab2-4a4c-84ec-e9a1eef3f680" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c98a73a3-9292-413b-a247-fe7666d23ee3" processor="salesforce:update" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update products" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="0b48cf33-97f7-4127-b15b-28ea45b18678" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="Product2" attributeName="type" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;	"successful":true&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="2385cd63-5e3e-4d3e-8a5f-8578627e5ebf" >
+				<munit:payload value='#[%dw 2.0&#10;output application/java &#10;---&#10;[ {&#10;    Id: "sdc",&#10;    Name: "sdcd",    &#10;    IsActive: "svdsdcsd",&#10;    CurrencyCode__c: "cx",&#10;    ProductPrice__c: "sca",&#10;    Description: "acs"&#10;}]]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to patch:\products:application\json:salesforce-product-sapi-config" doc:id="bc4458af-70fe-46a1-b76d-4595416290dd" name="patch:\products:application\json:salesforce-product-sapi-config"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="765838c7-fcdd-498f-a596-2d8cf1fe946c" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-patch:\products:application\json:salesforce-product-sapi-configTest1" doc:id="d2b06eb4-d01c-4a9a-bcee-463d0987d80f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="efdb673e-0d90-4e69-826a-7c9064f3a355" processor="salesforce:update" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update products" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="0b48cf33-97f7-4127-b15b-28ea45b18678" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="Product2" attributeName="type" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="744ea0d7-376f-4c77-ad5e-7a846bd8fa8c" >
+				<munit:payload value='#[%dw 2.0&#10;output application/java &#10;---&#10;[ {&#10;    Id: "sdc",&#10;    Name: "sdcd",    &#10;    IsActive: "svdsdcsd",&#10;    CurrencyCode__c: "cx",&#10;    ProductPrice__c: "sca",&#10;    Description: "acs"&#10;}]]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to patch:\products:application\json:salesforce-product-sapi-config" doc:id="b6e4dced-3f06-4d0a-8e12-33fba8c0c8c5" name="patch:\products:application\json:salesforce-product-sapi-config" />
+		</munit:execution>
+	
+</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-get:\products:salesforce-product-sapi-configTest" doc:id="7c3f9b70-99a9-42af-a428-ed1572eec78b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="724fcfe7-2bca-4f71-bcc2-ae43bfe9db1a" processor="salesforce:query">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="fetch by Id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="732c7828-de9b-49eb-969f-d8da03657165" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="6f970b4b-0af6-480d-832f-e3bac92cc422" >
+				<munit:attributes value="#[{&#10;	&quot;queryParams&quot;:&#10;	{'externalId':&quot;12321324&quot;}&#10;}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\products:salesforce-product-sapi-config" doc:id="ecf26981-7ad9-4a92-a719-38948c5b393d" name="get:\products:salesforce-product-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="79f961ce-50bd-48f0-bf2f-514a12c24bfe" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-get:\products:salesforce-product-sapi-configTest1" doc:id="5879295a-14b5-4763-943f-2153d74720de" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c6323ef2-c2bc-4c70-bfdc-e0186e38fea3" processor="salesforce:query-all" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="fetch all product" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f2646c04-71d5-43f5-af8a-6ca01120014d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\products:salesforce-product-sapi-config" doc:id="40ceac1f-85e2-4881-8ca7-0615d0f80447" name="get:\products:salesforce-product-sapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f73350bc-5170-4cf3-b485-50e4c57305df" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-post:\products:application\json:salesforce-product-sapi-configTest" doc:id="4ef0cadc-439e-4bee-b80c-07fd98a1f423" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c46b8609-21ca-4daf-a907-488e7450ad13" processor="salesforce:create">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="createProduct" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="Salesforce_Config_new" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="Product2" attributeName="type" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0a704d90-9b4e-4cae-826c-b17d942fa11b" >
+				<munit:payload value="#[[]]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to post:\products:application\json:salesforce-product-sapi-config" doc:id="dc078c29-24bb-448f-b313-97467011b3bd" name="post:\products:application\json:salesforce-product-sapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f846ba90-9c21-40fc-ac97-617a7fdf5df9" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	
+</munit:test>
+	<global-property doc:name="Global Property" doc:id="9bc5af04-bf77-4536-94b1-683a8a12d2b5" name="mule.key" value="1234567891234567" />
+	<munit:test name="salesforce-product-sapi-test-suite-errorFlow-APIKIT:BAD_REQUEST" doc:id="77c8d486-7ab7-47ea-88cf-23c0439e75e5" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="cdbc884f-8b57-46ab-bc88-8aadb25058c3" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="db981c63-40e4-4cc7-bb2a-8744668ed051" >
+				<flow-ref doc:name="Flow-ref to salesforce-product-sapi-main" doc:id="d00be3b4-5462-4f1c-89be-646f4140acaa" name="salesforce-product-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="919bf01a-c437-4460-9433-a80815c1f710" >
+						<logger level="INFO" doc:name="Logger" doc:id="1927e473-6121-47cb-9f31-25b0a01c0405" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-errorFlow-INVALID_CREDENTIALS" doc:id="f6f99a18-0880-4fce-a14b-ed79e1118f60" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="802f230e-01df-4887-9d9d-acc8bdc1ac26" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="INVALID_CREDENTIALS" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="11cda709-c0f0-4b47-a83e-44e0b5508639" >
+				<flow-ref doc:name="Flow-ref to salesforce-product-sapi-main" doc:id="a5dfb41e-126b-4fd4-bdd4-9708bbd9d873" name="salesforce-product-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="049b16a9-4bda-432d-8def-faa2af9bce51" >
+						<logger level="INFO" doc:name="Logger" doc:id="12cec718-9459-416a-b335-663a5c814846" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-errorFlow-APIKIT:METHOD_NOT_ALLOWED" doc:id="8f6f8fb4-e3fa-4640-9320-f7e81a6ffb3a" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="4234a3aa-ed97-42f9-94f1-d86db2faa9af" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="58662388-7a39-4bc0-b8d0-75e1f4aa8e08" >
+				<flow-ref doc:name="Flow-ref to salesforce-product-sapi-main" doc:id="c8068f16-115b-499b-b1dd-6eff1d7640d6" name="salesforce-product-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fecbd6ad-eb4a-4a2a-817b-6f581279105a" >
+						<logger level="INFO" doc:name="Logger" doc:id="3903e914-feff-40dc-8b73-573fa9262666" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-errorFlow-APIKIT:NOT_FOUND" doc:id="3aaef090-080d-4177-b02d-56bf7c43f99a" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="da9939bf-0f32-4372-baa0-c5574b6dd54a" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="172b271e-1303-43e7-9e11-79ddf64449a8" >
+				<flow-ref doc:name="Flow-ref to salesforce-product-sapi-main" doc:id="e89a34aa-13b7-43aa-a411-d091c8f94435" name="salesforce-product-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="53d25ef7-e956-4860-aa59-fb603bd2e65c" >
+						<logger level="INFO" doc:name="Logger" doc:id="541a0e09-cad0-4c3b-b13c-83d2a1e0591c" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-errorFlow-CONNECTIVITY" doc:id="f26bb58b-759d-4e0d-8e3a-cf219d68d3f7" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="18be7fab-e4f3-4e32-8b98-079403dc4e3c" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="CONNECTIVITY" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="56adaffd-d6d3-4703-8772-9d9d27035bde" >
+				<flow-ref doc:name="Flow-ref to salesforce-product-sapi-main" doc:id="6fe64180-d230-47db-811e-4ae0ef80d4a4" name="salesforce-product-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1d75cd6f-1a7f-41be-ba62-215281e9d146" >
+						<logger level="INFO" doc:name="Logger" doc:id="7b877bd3-879b-47dd-a935-83bd33a2d3a6" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="salesforce-product-sapi-test-suite-errorFlow-APIKIT:NOT_IMPLEMENTED" doc:id="db5ae3e6-413b-4f6b-85f9-3b2ecfa4ae6c" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b43b79b3-c565-43e8-baf5-ddaabd89aeb3" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce-product-sapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="f6c1a8eb-e5be-46d5-988a-421fff9af6e7" >
+				<flow-ref doc:name="Flow-ref to salesforce-product-sapi-main" doc:id="b4341bfb-ddd1-44a0-86ac-4319de7a57ed" name="salesforce-product-sapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="40e0a6f7-0206-4356-b87e-10ce9ef3bad5" >
+						<logger level="INFO" doc:name="Logger" doc:id="58013740-22b0-4b93-8843-49a410236b10" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

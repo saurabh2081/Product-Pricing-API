@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="currency-conversion-sapi--test-suite.xml" />
+<!-- 	<munit:test name="currency-conversion-sapi&#45;&#45;test-suite-currency-conversion-sapi&#45;&#45;mainTest" doc:id="da971b1a-72f6-42e7-b21c-f512453b0a7d" description="Test"> -->
+<!-- 		<munit:execution > -->
+<!-- 			<flow-ref doc:name="Flow-ref to currency-conversion-sapi&#45;&#45;main" doc:id="9bc079da-0d11-4873-b9bc-4d91ecc6a085" name="currency-conversion-sapi&#45;&#45;main"/> -->
+<!-- 		</munit:execution> -->
+<!-- 	</munit:test> -->
+		<munit:test name="currency-conversion-sapi--test-suite-currency-conversion-sapi-mainTest" doc:id="c376f6a2-1a33-49b9-8c5a-64711fc7b918" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="3e122da5-6138-4d98-a278-5d3fb739bfcd" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="currency-conversion-sapi--config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to currency-conversion-sapi--main" doc:id="9ac94562-1297-4659-896a-3f9b8b06bcde" name="currency-conversion-sapi--main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="04a8cc17-7484-4c8b-b487-1174d3bed78c" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="currency-conversion-sapi-test-suite-get:\exchange-notNull" doc:id="c6dac3d7-2438-46a5-a783-41d67733c76f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="088a911d-d560-4ece-bf13-4b23deb11ea0" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="${currency-conversion-ext.http.method}" attributeName="method" />
+					<munit-tools:with-attribute whereValue="calling-external-currency-conversion-api" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="6a6289aa-9272-4741-8761-f58b9c99ad91" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${currency-conversion-ext.http.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{&#10;	"samplePayload":"exchange"&#10;}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to currency-conversion-sapi--main" doc:id="70252c25-8924-48a5-b5d8-7f85e8906236" name="get:\exchange:currency-conversion-sapi--config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="e16a7c0f-4d41-4dc6-a5a6-2a09a9de4167" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="currency-conversion-sapi-test-suite-errorFlow-APIKIT:NOT_FOUND" doc:id="bceb2004-59da-4d13-a2e4-0793e3b07649" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="424f92af-1d3f-4910-a3b0-13a7e937fba6" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="currency-conversion-sapi--config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="3e22e0a4-974d-4a98-971c-1e33f5dda14b" >
+				<flow-ref doc:name="Flow-ref to currency-conversion-sapi--main" doc:id="58e17e77-0743-4416-9065-e35477bd16e6" name="currency-conversion-sapi--main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="56b03f00-8d91-43d1-9f4c-2ccb76d76ff3" >
+						<logger level="INFO" doc:name="Logger" doc:id="5b21dbb3-84c0-4392-b963-c1161e8cb93b" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="currency-conversion-sapi-test-suite-errorFlow-APIKIT:METHOD_NOT_ALLOWED" doc:id="041ddec7-e0e4-4eac-8d8a-8dd3f43684e7" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c307619a-a92a-4398-b1b0-5cdb4b1e64e2" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="currency-conversion-sapi--config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="d3a694cb-8e2d-4db7-801c-93e850138832" >
+				<flow-ref doc:name="Flow-ref to currency-conversion-sapi--main" doc:id="f2a92844-3124-4de2-a9f7-86a840e6688d" name="currency-conversion-sapi--main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="134c34ef-6f19-441a-9984-420ccf9b4861" >
+						<logger level="INFO" doc:name="Logger" doc:id="f2f79ae1-2299-4897-bba2-fcffc0e10065" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="currency-conversion-sapi-test-suite-errorFlow-APIKIT:NOT_ACCEPTABLE" doc:id="4bf22978-2057-4f83-a421-66ef7e6c820a" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="80a6abeb-9ed6-43cc-9016-d72cd6c8df82" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="currency-conversion-sapi--config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="dbc04809-b3aa-43a8-9d21-6918d4b004de" >
+				<flow-ref doc:name="Flow-ref to currency-conversion-sapi--main" doc:id="0e476df7-b6ac-4a05-a312-f4f7ad02b804" name="currency-conversion-sapi--main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d4a508a2-e6b6-4929-b3aa-81e4e1df847f" >
+						<logger level="INFO" doc:name="Logger" doc:id="4cd35d3f-7b6a-4a8e-ba16-d460b20c71e0" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="currency-conversion-sapi-test-suite-errorFlow-APIKIT:BAD_REQUEST" doc:id="dc2fddc4-e1a2-4d60-b268-cecb435a5873" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="15daaf04-1f9c-48b8-871f-029b0c152fdf" processor="apikit:router">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="currency-conversion-sapi--config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="0e230cc5-59cd-49d4-bec5-d72bbc88ad9c">
+				<flow-ref doc:name="Flow-ref to currency-conversion-sapi--main" doc:id="e9964525-b4ec-4779-89b2-3c592f7c6f63" name="currency-conversion-sapi--main" />
+				<error-handler>
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6a6090ca-e6a0-40c4-aa28-a8ac7cc24b34">
+						<logger level="INFO" doc:name="Logger" doc:id="64fbc651-402d-45a1-ba1d-ca1246df37c7" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

@@ -1,0 +1,35 @@
+#%RAML 1.0 DataType
+type: array
+description: A list of data to update poroduct on Salesforce
+minItems: 1
+uniqueItems: true
+items:
+  additionalProperties: false
+  type: object
+  properties:
+    ProductPrice:
+      type: number
+      required: false
+      minimum: 0
+      multipleOf: 0.01
+      example: 1500.50
+    Description:
+      type: string
+      required: false
+      example: "software"
+    Id:
+      type: string
+      required: true
+      example: "01tgL00000A8t6PQAR"
+    CurrencyCode:
+      type: string
+      required: false
+      example: "USD"
+    Name:
+      type: string
+      required: false
+      example: "animal"
+    IsActive:
+      type: boolean
+      required: false
+      example: true

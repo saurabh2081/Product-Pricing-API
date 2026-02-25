@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getProductFlow" doc:id="cdf1d61c-d19e-48b0-aa2b-a436e2705099" >
+		<logger level="INFO" doc:name="start" doc:id="a9047fe4-46a5-4236-8305-041ebcae7209" message='"EAPI - getProductflow start"'/>
+		<ee:transform doc:name="queryParam variables" doc:id="2d79e2b2-7331-4c48-a252-b86eab59c4a9" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="plimit" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.limit default "10"]]></ee:set-variable>
+				<ee:set-variable variableName="poffset" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.offset default "0"]]></ee:set-variable>
+				<ee:set-variable variableName="pcurrency" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.queryParams.currency default "USD"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="${secure::product-pricing-papi.method}" doc:name="calling product pricing  papi" doc:id="dc76722f-ea84-4a8c-a4a3-1dfc1b940484" config-ref="product-papi-HTTP_Request_configuration" path="${secure::product-pricing-papi.path}">
+			<http:headers ><![CDATA[#[{
+	client_id: p('secure::auth.clientId'),
+	client_secret: p('secure::auth.clientSecret')
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[{
+	targetCurrency: vars.pcurrency,
+	limit: vars.plimit,
+	offset: vars.poffset
+}]]]></http:query-params>
+		</http:request>
+		<logger level="DEBUG" doc:name="response payload from product-papi" doc:id="8457980f-9b3e-447f-8dee-0cdd2ad2e5c3" message='"response payload from product-papi"#[payload]'/>
+		<ee:transform doc:name="final resposne" doc:id="9468d812-ac8c-4dfb-9d46-3cf40b000a9d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="4c627bfd-c757-469e-aefa-f305b28933e8" message='"EAPI - getProductflow end"'/>
+	</flow>
+	<flow name="createProductFlow" doc:id="1a2665ee-832d-457f-b971-0e436831dbd6" >
+		<logger level="INFO" doc:name="start" doc:id="27d42a30-6c2d-430d-8bfa-7ce136c934e0" message='"EAPI - createProductflow start"' />
+		<logger level="DEBUG" doc:name="requestPayload for salesforce-sapi" doc:id="d56708c3-65bb-4bbc-b653-958fe071765d" message='"requestPayload to salesforce-sapi"#[payload]' />
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="8ebf9ae1-f593-48a2-95a9-4f64eb786230" >
+			<http:request method="${secure::salesforce-sapi.createMethod}" doc:name="calling create sapi" doc:id="253453d3-2e67-4a90-b8e3-fa942100edd4" config-ref="salesforce_sapi_request_configuration" path="${secure::salesforce-sapi.path}">
+			<http:headers><![CDATA[#[{
+	client_id: p('secure::auth.clientId'),
+	client_secret: p('secure::auth.clientSecret')
+}]]]></http:headers>
+		</http:request>
+		</until-successful>
+		<logger level="DEBUG" doc:name="responsePayload for salesforce-sapi" doc:id="2249e944-6e89-4ee4-8a38-b2a0ca24647b" message='"responsePayload from salesforce-sapi"#[payload]' />
+		<logger level="INFO" doc:name="end" doc:id="1f0d405a-1f4e-4746-81d7-d71a58b8ea8d" message='"EAPI - createProductflow end"' />
+	</flow>
+	<flow name="updateProductFlow" doc:id="ccc5e740-df6b-4262-bb87-ad611af4c1e3" >
+		<logger level="INFO" doc:name="start" doc:id="2d6cac02-7c6c-47f1-b1f5-63fa80fc28c9" message='"EAPI - updateProductflow start"'/>
+		<logger level="DEBUG" doc:name="requestPayload for salesforce-sapi" doc:id="d18800ed-1086-44fc-9a49-b092d9b90ad5" message='"requestPayload to salesforce-sapi"#[payload]' />
+		<ee:transform doc:name="price type modification" doc:id="1f2a5907-c387-4db5-a9c5-e7d50b2909cb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> item  update {
+    case price at .ProductPrice -> price as String
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="DEBUG" doc:name=" actual request sent to salesforce-sapi" doc:id="405172ad-e09e-462c-97a0-b07078eee3e1" message='"actual request sent to salesforce-sapi"#[payload]' />
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="785f45a6-384b-400c-ba3e-25b627ee6fa3" >
+			<http:request method="${secure::salesforce-sapi.updateMethod}" doc:name="calling update sapi" doc:id="20b3f3e0-ce3b-4f99-821e-76284341ce73" config-ref="salesforce_sapi_request_configuration" path="${secure::salesforce-sapi.path}">
+			<http:headers><![CDATA[#[{
+	client_id: p('secure::auth.clientId'),
+	client_secret: p('secure::auth.clientSecret')
+}]]]></http:headers>
+		</http:request>
+		</until-successful>
+		<logger level="DEBUG" doc:name="responsePayload for salesforce-sapi" doc:id="691eab8a-832b-4d4c-8d43-3c15ceaffe26" message='"responsePayload from salesforce-sapi"#[payload]' />
+		<ee:transform doc:name="final Response" doc:id="ea3b303a-cef4-4415-ba69-f7742806b7d6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ if (payload.message ==  "All product updated successfully") {"message":"Product updated successfully"} else payload
+	]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="b88f8b6e-6a87-4095-adaf-61130ff4c01b" message='"EAPI - updateProductflow end"' />
+	</flow>
+	<flow name="deleteProductFlow" doc:id="004054b6-59f2-46ee-a864-69b13a962502" >
+		<logger level="INFO" doc:name="start" doc:id="c13eed18-bfa1-4f6e-b1bf-597f12b3dffa" message='"EAPI - deleteProductflow start"' />
+		<logger level="DEBUG" doc:name=" request sent to salesforce-sapi" doc:id="e209a731-079b-4620-956a-80e2edf67e9a" message='"request sent to salesforce-sapi"#[payload]' />
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="64ab8909-2693-4e42-88ec-b5635d557b86" >
+			<http:request method="${secure::salesforce-sapi.deleteMethod}" doc:name="calling delete sapi" doc:id="3117332e-dbc4-44a9-8e18-4477dd3610f1" config-ref="salesforce_sapi_request_configuration" path="${secure::salesforce-sapi.path}">
+			<http:headers><![CDATA[#[{
+	client_id: p('secure::auth.clientId'),
+	client_secret: p('secure::auth.clientSecret')
+}]]]></http:headers>
+		</http:request>
+		</until-successful>
+		<logger level="DEBUG" doc:name="response from salesforce-sapi" doc:id="e0657c78-65a4-4481-bb5d-baf92c3bc12e" message='"response from salesforce-sapi"#[payload]' />
+		<ee:transform doc:name="final response" doc:id="5a84aff3-a5e4-4b72-86ff-62db215af05a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ if (payload.message == "All products deleted successfully") {"message":"Product deleted successfully"} else payload
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="29ecd682-a333-4de0-a9e7-e2b4d384f9e4" message='"EAPI - deleteProductflow end"' />
+	</flow>
+	<flow name="fetchByExternalIdFlow" doc:id="f00bd0ac-4cb2-4ad9-9442-9387387b8861" >
+		<logger level="INFO" doc:name="start" doc:id="cf4b3b71-74b1-4733-bcc6-6c78ddb2e99c" message='"EAPI - getProductByIdflow start"'/>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="5705fac1-b030-4b08-ad96-434f8e158680" >
+			<http:request method="${secure::salesforce-sapi.readMethod}" doc:name="calling get sapi by id" doc:id="3fe0981e-7955-4404-8bae-f96918803e6b" config-ref="salesforce_sapi_request_configuration" path="${secure::salesforce-sapi.path}">
+			<http:headers><![CDATA[#[{
+	client_id: p('secure::auth.clientId'),
+	client_secret: p('secure::auth.clientSecret')
+}]]]></http:headers>
+				<http:query-params ><![CDATA[#[{
+	externalId: attributes.uriParams.'externalId'
+}]]]></http:query-params>
+		</http:request>
+		</until-successful>
+		<ee:transform doc:name="final response" doc:id="0958548e-3e01-40c0-9359-aac1477de960" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload == []) {"message": "No record found for given externalId"} else payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="db6257b9-aeec-40b0-b9c9-ff2ad666a246" message='"EAPI - getProductByIdflow end"' />
+	</flow>
+</mule>

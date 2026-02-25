@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+
+   <http:listener-config name="product-pricing-papi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>	
+	
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="4431d167-b42e-4e45-a99e-9de883f4f25a" file="properties\app-${env}.secure.yaml" key="${mule.key}" />
+	<global-property doc:name="Global Property" doc:id="97f0bd22-5366-4d44-a257-7b6c123b98e5" name="env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="64cfd641-32cf-48d5-b0b1-4a0a260163fd" name="mule.key" value="1234567891234567" />
+	<http:request-config name="conversion_sapi_request_configuration" doc:name="HTTP Request configuration" doc:id="0a24392b-14cc-4b5c-ad20-23d5073fb0ce" responseTimeout="30000">
+		<http:request-connection host="${secure::conversion-sapi.host}" protocol="HTTPS"/>
+	</http:request-config>
+	<http:request-config name="salesforce_sapi_request_configuration" doc:name="HTTP Request configuration" doc:id="28ffe19f-8ae7-4390-a087-32ee3b410e12" responseTimeout="30000">
+		<http:request-connection protocol="HTTPS" host="${secure::salesforce-sapi.host}" />
+	</http:request-config>
+<!-- 	<api-gateway:autodiscovery apiId="${secure::api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="9d77a55a-bbb5-40c0-905d-19eb082a0985" flowRef="product-pricing-papi-main" />	 -->
+	
+</mule>

@@ -1,0 +1,67 @@
+#%RAML 1.0
+title: salesforce-product-sapi
+version: v1
+mediaType: application/json
+
+types:
+  Product: !include dataType/product-dataType.raml
+  deleteProductType: !include dataType/delete-product-request-dataType.raml
+  updateProductType: !include dataType/update-product-request-dataType.raml
+# createProductType: !include dataType/create-product-request-dataType.raml
+
+#traits:
+#  pagination: !include traits/pagination-trait.raml
+
+/products:
+  get:
+    description: Fetch all products 
+    queryParameters:
+      currencyCode:
+        type: string
+        required: false
+        description: Target currency code (e.g INR) for conversion
+      externalId:
+        type: string
+        required: false
+        description: uniqueId to fetch product
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include dataType/allProducts.json
+               
+
+  post:
+    description: Create a new product in Salesforce.
+    body:
+      application/json:
+        type: Product
+    responses:
+      201:
+        body:
+          application/json:
+            example: { "message": "Product created", "id": "P00000000001" }
+
+  patch:
+    description: Update product details. ProductCode is immutable.
+    body:
+      application/json:
+          type: updateProductType
+        
+    responses:
+      200:
+        body:
+          application/json:
+            example: { "message": "Product updated successfully" }
+
+  delete:
+    description: Remove multiple products from Salesforce
+    body:
+      application/json:
+        type: deleteProductType
+       
+    responses:
+      200:
+        body:
+          application/json:
+            example: {"message": "Products deleted successfully"}

@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_ccc5e740_df6b_4262_bb87_ad611af4c1e3_Input_Payload = Array<{  CurrencyCode?: String,   Description?: String,   ProductPrice?: String,   Id: String,   Name?: String,   _?: Any}> {"description": "A list of products returned from Salesforce"}
+

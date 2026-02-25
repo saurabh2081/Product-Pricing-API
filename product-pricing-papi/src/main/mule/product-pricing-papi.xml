@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    
+    <apikit:config name="-product-pricing-papi-config" api="-product-pricing-papi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="product-pricing-papi-main">
+        <http:listener config-ref="product-pricing-papi-httpListenerConfig" path="/papi/v1/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+		<apikit:router config-ref="-product-pricing-papi-config" />
+        <error-handler ref="globalErrorHandler">
+           
+        </error-handler>
+    </flow>
+    <!-- [STUDIO:"-product-pricing-papi-console"]<flow name="-product-pricing-papi-console">
+        <http:listener config-ref="product-pricing-papi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200&#93;">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}&#93;&#93;&#93;></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500&#93;">
+                <http:body><![CDATA[#[payload&#93;&#93;&#93;></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}&#93;&#93;&#93;></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="-product-pricing-papi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{message: "Resource not found"}&#93;&#93;></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow> [STUDIO] -->
+    <flow name="get:\products:-product-pricing-papi-config">
+		<flow-ref doc:name="goto getProductByCurrencyFlow" doc:id="4b3ec72c-2ac7-47ec-a0f4-0271b68bac77" name="getProductsByCurrencyCode"/>
+    </flow>
+    <!-- [STUDIO:"get:\clearObjectStore:-product-pricing-papi-config"]<flow name="get:\clearObjectStore:-product-pricing-papi-config">
+		<flow-ref doc:name="go to object store clear flow" doc:id="016420d5-254b-4cf9-9cad-49d80251b184" name="OSClearFlow"/>
+    </flow> [STUDIO] -->
+</mule>

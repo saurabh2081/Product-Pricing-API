@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+   
+    <apikit:config name="product-pricing-eapi-config" api="product-pricing-eapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" queryParamsStrictValidation="true"/>
+    <flow name="product-pricing-eapi-main">
+        <http:listener config-ref="product-pricing-eapi-httpListenerConfigrations" path="/eapi/v1/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+		<apikit:router config-ref="product-pricing-eapi-config" />
+        <error-handler ref="globalErrorHandler">
+           
+        </error-handler>
+    </flow>
+    <!-- [STUDIO:"product-pricing-eapi-console"]<flow name="product-pricing-eapi-console">
+        <http:listener config-ref="product-pricing-eapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200&#93;">
+                <http:headers>#[vars.outboundHeaders default {}&#93;</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500&#93;">
+                <http:body>#[payload&#93;</http:body>
+                <http:headers>#[vars.outboundHeaders default {}&#93;</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="product-pricing-eapi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{message: "Resource not found"}&#93;&#93;></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow> [STUDIO] -->
+    <flow name="delete:\admin\products:product-pricing-eapi-config">
+		<flow-ref doc:name="goto deleteproduct flow" doc:id="4d7437a4-5753-4d07-a17e-7b746de26262" name="deleteProductFlow"/>
+    </flow>
+    <flow name="patch:\admin\products:application\json:product-pricing-eapi-config">
+		<flow-ref doc:name="goto updateproduct flow" doc:id="b8df23a7-7a9c-4329-9d65-6a4e36e3b6e9" name="updateProductFlow"/>
+    </flow>
+    <flow name="get:\inventory:product-pricing-eapi-config">
+		<flow-ref doc:name="goto getproduct flow" doc:id="d1a3802d-4b10-4f33-ba67-9672fa486284" name="getProductFlow" />
+    </flow>
+    <flow name="post:\admin\products:application\json:product-pricing-eapi-config">
+		<flow-ref doc:name="goto createproduct flow" doc:id="ffbc0ed2-f1a4-4d9b-8733-de547de46d38" name="createProductFlow"/>
+    </flow>
+	<flow name="get:\inventory\(externalId):product-pricing-eapi-config" doc:id="fa00c718-8ada-4699-a79c-99b3b06d4e97" >
+		<flow-ref doc:name="goto getProductByIdflow" doc:id="fb183f0b-7420-4774-b9c7-b262d3885292" name="fetchByExternalIdFlow" />
+	</flow>
+</mule>

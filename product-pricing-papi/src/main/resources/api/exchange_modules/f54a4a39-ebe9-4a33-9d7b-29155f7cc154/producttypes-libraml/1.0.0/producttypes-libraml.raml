@@ -1,0 +1,19 @@
+#%RAML 1.0 Library
+types:
+  Product:
+    type: object
+    properties:
+      externalId: { type: string, maxLength: 12 }
+      name: string
+      productCode: string
+      description?: string
+      currencyCode: string
+      productPrice: number
+
+  ProductUpdate:
+    type: object
+    properties:
+      name?: string
+      description?: string
+      productPrice?: number
+      # Note: productCode is omitted to prevent updates

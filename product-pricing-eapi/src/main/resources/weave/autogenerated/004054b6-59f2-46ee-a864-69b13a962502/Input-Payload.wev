@@ -1,0 +1,7 @@
+%dw 2.0
+
+type auto_004054b6_59f2_46ee_a864_69b13a962502_Input_Payload = {
+  productId: Array<String> {"description": "A list of Salesforce Product IDs for bulk processing."}, 
+  _?: Any
+}
+

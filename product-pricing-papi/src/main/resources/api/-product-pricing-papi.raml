@@ -1,0 +1,70 @@
+#%RAML 1.0
+title:  product-pricing-papi
+
+version: v1
+mediaType: application/json
+
+uses:
+  ProductTypes: /exchange_modules/f54a4a39-ebe9-4a33-9d7b-29155f7cc154/producttypes-libraml/1.0.0/producttypes-libraml.raml
+
+traits:
+  paginatable: !include /trait/pagination-trait.raml
+
+/products:
+  get:
+    description: |
+      Orchestrates fetching products from Salesforce and converting 
+      prices via the External Currency API.
+    is: [ paginatable ]
+    queryParameters:
+      targetCurrency:
+        type: string
+        required: false
+        example: "INR"
+      externalId:
+        type: string
+        required: false
+        description: uniqueId to fetch product
+    responses:
+      200:
+        body:
+          application/json:
+            type: ProductTypes.Product[]
+            
+            
+                
+
+
+#  post:
+#    description: Passes product creation request to the Salesforce System API.
+#    body:
+#      application/json:
+#        type: ProductTypes.Product
+#    responses:
+#      201:
+#        body:
+#          application/json:
+#            example: { "status": "Success", "message": "Product processed and created" }
+#
+#  /{productId}:
+#    uriParameters:
+#      productId: 
+#        type: string
+#        maxLength: 12
+#    patch:
+#      description: Logic to ensure ProductCode is not updated before calling System API.
+#      body:
+#        application/json:
+#          type: ProductTypes.ProductUpdate
+#      responses:
+#        200:
+#          body:
+#            application/json:
+#              example: { "message": "Product update processed" }
+#    delete:
+#      description: Remove product from Salesforce
+#      responses:
+#        200:
+#          body:
+#            application/json:
+#              example: { "message": "Product deleted" }

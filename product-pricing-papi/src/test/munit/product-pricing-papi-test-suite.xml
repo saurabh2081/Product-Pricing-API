@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="product-pricing-papi-test-suite.xml" />
+<!-- 	<munit:test name="product-pricing-papi-test-suite-product-pricing-papi-mainTest" doc:id="49f957c7-e4e0-48ae-96b7-04675c9a1e85" description="Test"> -->
+<!-- 		<munit:execution > -->
+<!-- 			<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="a951b0b8-2d77-4eba-bc2c-a9159afb4eca" name="product-pricing-papi-main"/> -->
+<!-- 		</munit:execution> -->
+<!-- 	</munit:test> -->
+	<global-property doc:name="Global Property" doc:id="89390980-093e-4eed-8f63-09ced2a91e5d" name="mule.key" value="1234567891234567" />
+	<munit:test name="product-pricing-papi-test-suite-product-pricing-papi-mainTest" doc:id="f331951c-416c-463b-b2a6-561f0b5cef01" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e536963e-275e-43d3-ad98-ef28c92780a1" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="96333f6e-6ed6-4852-a306-401f129df263" name="product-pricing-papi-main"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="76d48a46-e31b-4e1d-82f8-556d6d75f350" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-product-pricing-papi-mainTest-get:\product" doc:id="e3332eee-38bd-41a8-8eb5-72b6b497feb8" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6fafbe2b-7c93-4b28-9cb2-d6d6cc4a6dc0" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="salesforce_sapi_request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="67fec561-9b9a-45e3-9ce5-ff0068bba94e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="conversion_sapi_request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::conversion-sapi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="get:\products:-product-pricing-papi-config" doc:id="64ff326a-f7f0-47e6-b965-5831531d175d" name="get:\products:-product-pricing-papi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="167b510a-1b18-40ce-9e8d-23f860dae4e7" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-errorFlow-APIKIT:BAD_REQUEST" doc:id="61811f40-2fdc-4fc9-9c0b-788582e5a187" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a3a22198-78fc-4fb1-b4f7-dc78720c94da" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="f4465c37-699b-4cb9-a118-07d4cb60bd4d" >
+				<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="a7a17130-1eed-4f85-a75f-0b19d65ff488" name="product-pricing-papi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="31bbedeb-71a3-42cf-9fd2-3b52c9a08b7b" >
+						<logger level="INFO" doc:name="Logger" doc:id="457f4db4-104a-4bfd-8b37-1bfb0b26bfaf" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-errorFlow-INVALID_CREDENTIALS" doc:id="d0e0b782-ff5d-4d2b-a71a-9f42fa958f0f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b08f55c0-b786-4f3d-a9c6-3c7c676fc894" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="INVALID_CREDENTIALS" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="5e7ba4b2-268d-42f6-9a83-ab2e286e59d9" >
+				<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="48cba531-ddc3-4ce2-ae0a-22b7daffb470" name="product-pricing-papi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fd07b0eb-eee6-4310-aee8-c7af8b1ead9a" >
+						<logger level="INFO" doc:name="Logger" doc:id="89090f4b-b1e5-4ea8-bb41-e9c7d341db02" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-errorFlow-APIKIT:METHOD_NOT_ALLOWED" doc:id="2cb3a536-c549-4a75-acad-06cc20753159" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8ba5d2cf-39a1-4f68-8a94-60fff2ab83b1" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="075ecd7f-24e2-4bb8-9a1b-d614f11d02d5" >
+				<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="fed88d3a-21b9-4e3d-b9ea-4ee6c5e32592" name="product-pricing-papi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e2498581-94cd-4890-b854-fdf6e944ec6e" >
+						<logger level="INFO" doc:name="Logger" doc:id="c0f54f9e-5a1c-48f6-bdb4-633691e566d8" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-errorFlow-APIKIT:NOT_FOUND" doc:id="02ff0049-1751-420c-92c6-8bfd1ca06d58" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a7e30b1d-c94a-412c-8305-539d68b9a0c1" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="73917e76-99b1-4508-9376-8cf4e86ae05e" >
+				<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="8b5f29f0-f948-4d38-a294-7fb22f007559" name="product-pricing-papi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ede5d251-550b-4957-8706-f764ae3bd780" >
+						<logger level="INFO" doc:name="Logger" doc:id="5c71a053-0b9d-4cd8-a698-9ed3b3a7093f" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-errorFlow-CONNECTIVITY" doc:id="9a1b0bf5-2b99-41ba-a56f-aa4a1fec9dde" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="11670f51-b0d9-4719-835b-899bdb45545f" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="CONNECTIVITY" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="be17d31c-10d6-47a5-94c3-9792c7fc8707" >
+				<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="b6899040-ec15-4207-8d46-0e54b06d8173" name="product-pricing-papi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0b444589-9e15-4404-aeb3-87ba81ba80a6" >
+						<logger level="INFO" doc:name="Logger" doc:id="e32edb6a-3244-4a2e-b2b8-54b8445a32f4" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-papi-test-suite-errorFlow-APIKIT:NOT_IMPLEMENTED" doc:id="d8097ba5-95e3-4662-b50a-30f16e5b1daa" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8adab94d-fc2b-47dd-9dab-3045d9a1ce69" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="-product-pricing-papi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="0daafab3-b223-4bd1-abdf-6ae4f66611b4" >
+				<flow-ref doc:name="Flow-ref to product-pricing-papi-main" doc:id="7d695ffa-5f21-4837-bcd3-e71b471e65dc" name="product-pricing-papi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="faea10df-3eab-4218-9fe6-5566128624c4" >
+						<logger level="INFO" doc:name="Logger" doc:id="1f086758-8a36-490e-b4fa-14b0ca01bc36" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

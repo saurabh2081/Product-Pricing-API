@@ -1,0 +1,85 @@
+#%RAML 1.0
+title: product-pricing-eapi
+version: v1
+mediaType: application/json
+
+traits:
+  paginatable: !include /pagi-trait.raml
+  
+types:
+  Product: !include dataType/product-dataType.raml
+  deleteProductType: !include dataType/delete-product-request-dataType.raml
+  updateProductType: !include dataType/update-product-request-dataType.raml
+
+/inventory:
+  get:
+    description: Fetch product catalog with prices converted to a specific currency.
+    is: [ paginatable ]
+    queryParameters:
+      currency:
+        type: string
+        default: USD
+        example: USD
+        required: false
+        maxLength: 3
+        enum: [INR, AUD, EUR, CAD, GBP, JPY, CNY, RUB, USD, inr, aud, eur, cad, gbp, jpy, cny, rub, usd]
+      externalId:
+        description: "uniqueId to fetch product"
+        type: string
+        required: false
+        maxLength: 12   
+        example: "P00000000000"
+    responses:
+      200:
+        body:
+          application/json: 
+            example: !include dataType/getAllProduct-response.json
+              
+
+  /{externalId}:
+    uriParameters:
+      externalId:
+        type: string
+        maxLength: 12
+        example: "P00000000001"
+    get:
+      description: Get details for a single product.
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include dataType/getProduct-response.json
+                
+
+/admin:
+  /products:
+    post:
+      description: Onboard a new product into the ecosystem.
+      body:
+        application/json:
+          type: Product
+      responses:
+        201:
+          body:
+            application/json:
+              example: !include dataType/create-product-response-example.json
+    patch:
+      description: Update product metadata.
+      body:
+        application/json:
+          type: updateProductType
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include dataType/update-product-response-example.json
+    delete:
+      description: Remove a product from the catalog.
+      body:
+        application/json:
+          type: deleteProductType
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include dataType/delete-product-response-example.json

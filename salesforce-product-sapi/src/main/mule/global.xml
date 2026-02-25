@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">	
+
+<http:listener-config name="HTTP_Listener_configration" doc:name="HTTP Listener config" doc:id="2d237cb7-63fd-4f84-b8da-de82830c4706" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+ </http:listener-config>	
+	
+	<salesforce:sfdc-config name="Salesforce_Config_new" doc:name="Salesforce Config" doc:id="64a00e39-71c2-4542-984f-c0c6f717f6ab" >
+		<salesforce:basic-connection username="${secure::sf.user}" password="${secure::sf.pass}" securityToken="${secure::sf.token}" url="https://login.salesforce.com/services/Soap/u/61.0"/>
+	</salesforce:sfdc-config>
+<!-- 	<configuration-properties doc:name="Configuration properties" doc:id="cfdae01a-5131-4277-93a8-716f33380aa2" file="properties\app-${env}.secure.yaml" /> -->
+	<global-property doc:name="Global Property" doc:id="3ec7da80-0f40-4e86-8c7a-da435ba7e5d1" name="env" value="dev" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="9c8366af-fe77-4e05-9bbb-6b7d44f2b41e" file="properties\app-${env}.secure.yaml" key="${mule.key}" />
+	<global-property doc:name="Global Property" doc:id="6e46cc0e-97d4-493a-bb3a-14ef4016e6c9" name="mule.key" value="1234567891234567" />
+<!-- 	<api-gateway:autodiscovery apiId="${secure::api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="d60fdc8f-8a79-422e-94d5-02e1ec641b88" flowRef="salesforce-product-sapi-main" />	 -->
+
+
+	
+
+</mule>

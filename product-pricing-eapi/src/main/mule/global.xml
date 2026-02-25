@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	
+
+<http:listener-config name="product-pricing-eapi-httpListenerConfigrations">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+ </http:listener-config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="cf16828c-174f-497a-aaf4-842e21f83554" file="properties\app-${env}.secure.yaml" key="${mule.key}" />
+	<global-property doc:name="Global Property" doc:id="2420970d-2301-4289-bd7f-cc573a960680" name="env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="f03d7153-6fff-46fd-b72a-cfa3b9e4c404" name="mule.key" value="1234567891234567" />
+	<http:request-config name="salesforce_sapi_request_configuration" doc:name="HTTP Request configuration" doc:id="4068de97-3e85-4a70-b0dd-7eba39aa2c89" responseTimeout="${secure::resp.timeout}">
+		<http:request-connection protocol="HTTPS" host="${secure::salesforce-sapi.host}" />
+	</http:request-config>
+	<http:request-config name="product-papi-HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="4b394430-38f4-42b1-9a79-84be22fde9f4" responseTimeout="${secure::resp.timeout}">
+		<http:request-connection host="${secure::product-pricing-papi.host}" protocol="HTTPS"/>
+	</http:request-config>
+<!-- 	<api-gateway:autodiscovery apiId="${secure::api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="40addd70-1acf-4d48-b8b6-2cb788917eda" flowRef="product-pricing-eapi-main" /> -->
+
+
+
+</mule>

@@ -1,0 +1,81 @@
+{
+    "metadata": {
+        "total_records": 57,
+        "limit": 7,
+        "offset": 20,
+        "estimated_page": 3,
+        "has_more": true
+    },
+    "Products": [
+        {
+            "ProductPrice__c": "67.14",
+            "Description": "updated description",
+            "ProductCode": "STG44552",
+            "ExternalId": "P00000000001",
+            "Id": "01tgL00000A7d3hQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "Jalebi"
+        },
+        {
+            "ProductPrice__c": "250.00",
+            "Description": "24/7 technical help",
+            "ProductCode": "SUP11223",
+            "ExternalId": "P00000000002",
+            "Id": "01tgL00000A7d3iQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "Premium Support"
+        },
+        {
+            "ProductPrice__c": "1200.50",
+            "Description": "Full developer access",
+            "ProductCode": "API99887",
+            "ExternalId": "P00000000003",
+            "Id": "01tgL00000A7d3jQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "API License v2"
+        },
+        {
+            "ProductPrice__c": "89.95",
+            "Description": "Antivirus and Firewall",
+            "ProductCode": "SEC55443",
+            "ExternalId": "P00000000004",
+            "Id": "01tgL00000A7d3kQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "Security Suite"
+        },
+        {
+            "ProductPrice__c": "45.00",
+            "Description": "Onboarding courseware",
+            "ProductCode": "EDU66778",
+            "ExternalId": "P00000000005",
+            "Id": "01tgL00000A7d3lQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "Training Module"
+        },
+        {
+            "ProductPrice__c": "750.75",
+            "Description": "Legacy to Cloud tool",
+            "ProductCode": "MIG00991",
+            "ExternalId": "P00000000006",
+            "Id": "01tgL00000A7d3mQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "Data Migrator"
+        },
+        {
+            "ProductPrice__c": "599.00",
+            "Description": "AI-driven support bot",
+            "ProductCode": "BOT33221",
+            "ExternalId": "P00000000007",
+            "Id": "01tgL00000A7d3nQAB",
+            "type": "Product2",
+            "CurrencyCode__c": "USD",
+            "Name": "Chatbot Pro"
+        }
+    ]
+}

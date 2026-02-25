@@ -1,0 +1,38 @@
+{
+    "totalProducts": 3,
+    "products": [
+        {
+            "Name": "Apex Analytics Svc",
+            "Id": "01tgL00000AsJskQAF",
+            "ExternalId": "PWNSB9VJTM1V",
+            "ProductCode": "APX10051",
+            "CurrencyCode__c": "USD",
+            "ProductPrice__c": "550.00",
+            "Description": "Cloud data insights",
+            "IsActive": "true",
+            "IsDeleted": "false"
+        },
+        {
+            "Name": "Brick Build Tool",
+            "Id": "01tgL00000AsJslQAF",
+            "ExternalId": "P61209ZWWK4P",
+            "ProductCode": "BRK10052",
+            "CurrencyCode__c": "USD",
+            "ProductPrice__c": "20.00",
+            "Description": "Modular build system",
+            "IsActive": "true",
+            "IsDeleted": "false"
+        },
+        {
+            "Name": "Cipher City Pro",
+            "Id": "01tgL00000AsJsmQAF",
+            "ExternalId": "P5YQH2RAEWWK",
+            "ProductCode": "CPY10053",
+            "CurrencyCode__c": "USD",
+            "ProductPrice__c": "4200.00",
+            "Description": "Metropolitan network encrypted",
+            "IsActive": "true",
+            "IsDeleted": "false"
+        }
+ ]
+ }

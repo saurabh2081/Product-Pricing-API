@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_1a2665ee_832d_457f_b971_0e436831dbd6_Input_Payload = Array<{  productCode: String,   name: String,   externalId?: String,   description?: String,   currencyCode?: String,   productPrice: Number,   _?: Any}>
+

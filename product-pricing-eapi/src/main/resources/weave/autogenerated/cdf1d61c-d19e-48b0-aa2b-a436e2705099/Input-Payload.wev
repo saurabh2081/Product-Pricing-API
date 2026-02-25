@@ -1,0 +1,5 @@
+%dw 2.0
+
+type auto_cdf1d61c_d19e_48b0_aa2b_a436e2705099_Input_Payload = Array<{|  id: String,   name: String,   sku: String,   description: String,   price: Number,   currency: String|}> {"mediaType": "application/json",
+"encoding": "UTF-8"}
+

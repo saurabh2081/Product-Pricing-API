@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="salesforce-product-sapi-config" api="salesforce-product-sapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+		<flow name="salesforce-product-sapi-main">
+        <http:listener path="/sapi/v1/*" config-ref="HTTP_Listener_configration">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="salesforce-product-sapi-config" />
+<!--         <error-handler> -->
+<!--             <on-error-propagate type="APIKIT:BAD_REQUEST"> -->
+<!--                 <ee:transform doc:name="Transform Message"> -->
+<!--                     <ee:message> -->
+<!--                         <ee:set-payload><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- {message: "Bad request"}]]></ee:set-payload> -->
+<!--                     </ee:message> -->
+<!--                     <ee:variables> -->
+<!--                         <ee:set-variable variableName="httpStatus">400</ee:set-variable> -->
+<!--                     </ee:variables> -->
+<!--                 </ee:transform> -->
+<!--             </on-error-propagate> -->
+<!--             <on-error-propagate type="APIKIT:NOT_FOUND"> -->
+<!--                 <ee:transform doc:name="Transform Message"> -->
+<!--                     <ee:message> -->
+<!--                         <ee:set-payload><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- {message: "Resource not found"}]]></ee:set-payload> -->
+<!--                     </ee:message> -->
+<!--                     <ee:variables> -->
+<!--                         <ee:set-variable variableName="httpStatus">404</ee:set-variable> -->
+<!--                     </ee:variables> -->
+<!--                 </ee:transform> -->
+<!--             </on-error-propagate> -->
+<!--             <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED"> -->
+<!--                 <ee:transform doc:name="Transform Message"> -->
+<!--                     <ee:message> -->
+<!--                         <ee:set-payload><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- {message: "Method not allowed"}]]></ee:set-payload> -->
+<!--                     </ee:message> -->
+<!--                     <ee:variables> -->
+<!--                         <ee:set-variable variableName="httpStatus">405</ee:set-variable> -->
+<!--                     </ee:variables> -->
+<!--                 </ee:transform> -->
+<!--             </on-error-propagate> -->
+<!--             <on-error-propagate type="APIKIT:NOT_ACCEPTABLE"> -->
+<!--                 <ee:transform doc:name="Transform Message"> -->
+<!--                     <ee:message> -->
+<!--                         <ee:set-payload><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- {message: "Not acceptable"}]]></ee:set-payload> -->
+<!--                     </ee:message> -->
+<!--                     <ee:variables> -->
+<!--                         <ee:set-variable variableName="httpStatus">406</ee:set-variable> -->
+<!--                     </ee:variables> -->
+<!--                 </ee:transform> -->
+<!--             </on-error-propagate> -->
+<!--             <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE"> -->
+<!--                 <ee:transform doc:name="Transform Message"> -->
+<!--                     <ee:message> -->
+<!--                         <ee:set-payload><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- {message: "Unsupported media type"}]]></ee:set-payload> -->
+<!--                     </ee:message> -->
+<!--                     <ee:variables> -->
+<!--                         <ee:set-variable variableName="httpStatus">415</ee:set-variable> -->
+<!--                     </ee:variables> -->
+<!--                 </ee:transform> -->
+<!--             </on-error-propagate> -->
+<!--             <on-error-propagate type="APIKIT:NOT_IMPLEMENTED"> -->
+<!--                 <ee:transform doc:name="Transform Message"> -->
+<!--                     <ee:message> -->
+<!--                         <ee:set-payload><![CDATA[%dw 2.0 -->
+<!-- output application/json -->
+<!-- -&#45;&#45; -->
+<!-- {message: "Not Implemented"}]]></ee:set-payload> -->
+<!--                     </ee:message> -->
+<!--                     <ee:variables> -->
+<!--                         <ee:set-variable variableName="httpStatus">501</ee:set-variable> -->
+<!--                     </ee:variables> -->
+<!--                 </ee:transform> -->
+<!--             </on-error-propagate> -->
+<!--         </error-handler> -->
+		<error-handler ref="globalErrorHandler" />
+    </flow>
+    <!-- [STUDIO:"salesforce-product-sapi-console"]<flow name="salesforce-product-sapi-console">
+        <http:listener path="/console/*" config-ref="HTTP_Listener_configration">
+            <http:response statusCode="#[vars.httpStatus default 200&#93;">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}&#93;&#93;&#93;></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500&#93;">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}&#93;&#93;&#93;></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="salesforce-product-sapi-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+&#45;&#45;-
+{message: "Resource not found"}&#93;&#93;></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow> [STUDIO] -->
+    <flow name="delete:\products:salesforce-product-sapi-config">
+		<flow-ref doc:name="goto delete flow" doc:id="cb09aa77-e146-42c1-b3e1-153fe93794b0" name="deleteProductFlow"/>
+    </flow>
+    <flow name="patch:\products:application\json:salesforce-product-sapi-config">
+		<flow-ref doc:name="goto update flow" doc:id="b6dc5d4f-80e9-42fb-8426-1ac2c9b676f0" name="updateProductsFlow"/>
+    </flow>
+    <flow name="get:\products:salesforce-product-sapi-config">
+		<choice doc:name="Choice" doc:id="c14b2ee7-34f9-4c85-8fc7-aa84b4928265" >
+			<when expression="#[attributes.queryParams.'externalId' != null]">
+				<flow-ref doc:name="goto get flow" doc:id="5fa5f55b-599f-43d1-bb53-e177bf5d36ca" name="getSingleProductFlow"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="goto getAll flow" doc:id="580b1412-273c-47c2-9c7a-568f9626cd3d" name="getAllProductsFlow" />
+			</otherwise>
+		</choice>
+    </flow>
+    <flow name="post:\products:application\json:salesforce-product-sapi-config">
+		<flow-ref doc:name="goto create flow" doc:id="071c95ac-f914-403d-b180-70ea74894330" name="createProductFlow"/>
+    </flow>
+</mule>

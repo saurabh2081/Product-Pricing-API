@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="product-pricing-eapi-test-suite.xml" />
+<!-- 	<munit:test name="product-pricing-eapi-test-suite-product-pricing-eapi-mainTest" doc:id="68aff7d6-1627-4ccc-8114-8738e519ff77" description="Test"> -->
+<!-- 		<munit:execution > -->
+<!-- 			<flow-ref doc:name="Flow-ref to product-pricing-eapi-main" doc:id="7c55da0d-5760-4bd7-a287-760215d7ed2e" name="product-pricing-eapi-main"/> -->
+<!-- 		</munit:execution> -->
+<!-- 	</munit:test> -->
+		<global-property doc:name="Global Property" doc:id="ebe72987-fdb9-4350-993d-1d3d730966fe" name="mule.key" value="1234567891234567" />
+	<munit:test name="product-pricing-eapi-test-suiteTest-delete:\admin\products" doc:id="f1a28923-e90d-47d4-ad26-d52d7b33ecf5" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="95ff691d-d9e8-438b-a4b9-f1b6f07980b7" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.deleteMethod}" attributeName="method" />
+					<munit-tools:with-attribute whereValue="calling delete sapi" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3117332e-dbc4-44a9-8e18-4477dd3610f1" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="salesforce_sapi_request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{"message":"All products deleted successfully"}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="delete:\admin\products:product-pricing-eapi-config" doc:id="67a8df4c-4853-4c13-a5f5-13c700334f5a" name="delete:\admin\products:product-pricing-eapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b500b138-5672-482f-bb01-a1f5f0923ab3" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-eapi-test-suiteTest-patch:\admin\products" doc:id="03a61e85-9f57-4515-ac26-0cfb787d7d2f" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c9fb39fa-2f07-40c3-8743-8a9d89d3c138" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="calling update sapi" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="20b3f3e0-ce3b-4f99-821e-76284341ce73" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="salesforce_sapi_request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output json&#10;---&#10;{"message":"All product updated successfully"}]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="4bb232ff-91f6-4995-8d93-f40a7878cc49" >
+				<munit:payload value="#[[]]" />
+			</munit:set-event>
+			<flow-ref doc:name="patch:\admin\products:application\json:product-pricing-eapi-config" doc:id="7a5a6238-5d6e-4749-96c2-fb0d81578b7f" name="patch:\admin\products:application\json:product-pricing-eapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f14a414c-5d4a-4f5c-9b0a-9c2bdf9bbb23" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-eapi-test-suiteTest-get:\inventory" doc:id="054f2529-ca36-476d-92c3-770ad7949977" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f7015460-bced-4dbf-9e5f-e65c21b7f854" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="${secure::product-pricing-papi.method}" attributeName="method" />
+					<munit-tools:with-attribute whereValue="calling product pricing  papi" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="${secure::product-pricing-papi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{"message":"Product Details"}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="get:\inventory:product-pricing-eapi-config" doc:id="8de89e3a-1336-4dce-b4a1-66c46d0a8647" name="get:\inventory:product-pricing-eapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f780ee5a-9f17-414f-9bcf-90a024ec9ef4" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-eapi-test-suiteTest-post:\admin\products" doc:id="dc81fc63-de4d-45ef-a3c3-096c71f91ee3" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dbf4c9e4-9505-4cbc-be3f-757e71a9cfc7" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="calling create sapi" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="253453d3-2e67-4a90-b8e3-fa942100edd4" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="salesforce_sapi_request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{"message":"Product created successfully"}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="post:\admin\products:application\json:product-pricing-eapi-config" doc:id="ea2b4f55-9904-4821-b11b-05733d53d758" name="post:\admin\products:application\json:product-pricing-eapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f0110ebf-4b0c-4ee4-906c-0524dac50b66" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-eapi-test-suiteTest-get:\inventory\(externalId)" doc:id="db0e2c72-1053-410b-8c59-048821749847" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1986fde9-40ab-4bc7-9678-d6221e85636b" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.readMethod}" attributeName="method" />
+					<munit-tools:with-attribute whereValue="calling get sapi by id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="salesforce_sapi_request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${secure::salesforce-sapi.path}" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[[]]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="get:\inventory\(externalId):product-pricing-eapi-config" doc:id="8acccabe-6d28-4e74-9b3a-b632a6d3a431" name="get:\inventory\(externalId):product-pricing-eapi-config" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="bb14d1b7-02c7-45fc-bb9d-3506eaf67323" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	
+</munit:test>
+	<munit:test name="product-pricing-eapi-test-suiteTest-mainFlow" doc:id="ff9bdaa3-237e-4aa0-b561-97f0b75a1f96" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="140f2325-422a-4907-9ec5-43583776009f" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[{"message":"All products deleted successfully"}]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="product-pricing-eapi-main" doc:id="ac5f0792-e3be-4264-8580-207659036d79" name="product-pricing-eapi-main" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-eapi-test-suite-errorFlow-APIKIT:BAD_REQUEST" doc:id="c98a9d64-21cb-404d-b975-3735d9adbb4e" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="46d600e8-bb21-45d0-ad5c-5a3d6aa8cd64" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="72d68952-8154-4586-a3bf-b4fc4c304e96" >
+				<flow-ref doc:name="Flow-ref to product-pricing-eapi--main" doc:id="9caf47e7-36e3-40f7-abb4-505606142482" name="product-pricing-eapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c45a2694-3b54-4efd-b1d2-906da97fb03b" >
+						<logger level="INFO" doc:name="Logger" doc:id="4211337a-de6c-47c6-b681-52eed71bc7e1" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-eapi-test-suite-errorFlow-INVALID_CREDENTIALS" doc:id="31963e8a-a245-481c-bcbf-8632150a84a4" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0e3ea6b7-c70b-4cf3-9f5e-62d5fe78895d" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="INVALID_CREDENTIALS" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution>
+			<try doc:name="Try" doc:id="d345af96-d06b-4a53-aa71-85b0c5384175" >
+				<flow-ref doc:name="Flow-ref to product-pricing-eapi--main" doc:id="3f1407de-4625-4dbf-a18b-1a48311ba01c" name="product-pricing-eapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="456ee9bc-a9e2-4feb-828e-12bbeb82013a" >
+						<logger level="INFO" doc:name="Logger" doc:id="5ddfb190-4326-4d01-9434-453bbb647a92" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-eapi-test-suite-errorFlow-APIKIT:METHOD_NOT_ALLOWED" doc:id="a26d477c-530d-49f8-9d23-c43ab0932dbd" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dc039894-d7c2-4621-8382-4455f90dc7c5" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="387caa83-06a6-4a3a-b273-18fac2d86236" >
+				<flow-ref doc:name="Flow-ref to product-pricing-eapi--main" doc:id="ca08449a-0654-47b5-b5b4-4ec2f3155c2c" name="product-pricing-eapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="73f725d5-f708-4f77-b855-b158d7bee56f" >
+						<logger level="INFO" doc:name="Logger" doc:id="d2698b9b-2989-4955-bb39-6396f7720b54" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-eapi-test-suite-errorFlow-APIKIT:NOT_FOUND" doc:id="c295c126-0a07-4895-91e5-dcb27decd8e7" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9d09861f-95f6-422d-89f3-88f31c0525ff" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="e7c12e5d-4443-4aac-9a7f-647c3c148f82" >
+				<flow-ref doc:name="Flow-ref to product-pricing-eapi-main" doc:id="f350b4fd-2741-42c0-a6b5-82893fd1d753" name="product-pricing-eapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="46fb8539-2efe-4919-93ef-9badbf22b73d" >
+						<logger level="INFO" doc:name="Logger" doc:id="4e130e2f-926c-448a-b784-fdb8b31928ca" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-eapi-test-suite-errorFlow-CONNECTIVITY" doc:id="d158ce84-5c56-4f41-a4e5-52b046a38a50" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b440ed5c-d943-4587-b7bb-b1e4b77b119e" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="CONNECTIVITY" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="33b3229c-0103-476d-a721-8bb07750c920" >
+				<flow-ref doc:name="Flow-ref to product-pricing-eapi--main" doc:id="0ed372ab-4ca4-43c9-90a7-f4fb353bfa83" name="product-pricing-eapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ed06fd67-362e-4c7a-b8f3-1a542e4a54b8" >
+						<logger level="INFO" doc:name="Logger" doc:id="4c29ccfa-5cdf-4ad7-97e5-06aefbc38a5d" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="product-pricing-eapi-test-suite-errorFlow-APIKIT:NOT_IMPLEMENTED" doc:id="e157a71e-eeff-489f-a2f3-c47558109ec0" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="98427f05-52c7-4214-b4bc-3aa47c2962c1" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="product-pricing-eapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="3ec1b7e3-37f3-4a13-84f2-25e859507619" >
+				<flow-ref doc:name="Flow-ref to product-pricing-eapi--main" doc:id="cd7ad8d5-69f0-4c44-8b55-aa52bddcba2d" name="product-pricing-eapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="45088983-1751-4f9e-8ce8-7303860aa6eb" >
+						<logger level="INFO" doc:name="Logger" doc:id="0cf2f3b2-4bd3-4758-be19-10f84d683802" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
