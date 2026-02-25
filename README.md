@@ -1,3 +1,7 @@
 The product-pricing-papi acts as the central orchestration layer for managing product data and pricing logic within the MuleSoft application network. Following the API-led connectivity model, it receives refined requests from the product-pricing-eapi and coordinates downstream calls to the system layer. Specifically, it interfaces with the salesforce-product-sapi to perform CRUD operations on the Product2 object—utilizing the ExternalId for unique identification—and invokes the currency-conversion-sapi to handle real-time price transformations into requested currency codes (e.g., INR, AED). The orchestration logic also manages pagination (limit and offset) for inventory fetches and fulfilling the core business requirement for accurate product inventory reporting.
 
+<img width="940" height="627" alt="image" src="https://github.com/user-attachments/assets/c0b9758a-ce1a-4ab8-82db-02b2bcc5984f" />
+
+
+
 <img width="940" height="770" alt="image" src="https://github.com/user-attachments/assets/0691f702-9bf3-477d-81e4-1bd7a9e96d60" />
